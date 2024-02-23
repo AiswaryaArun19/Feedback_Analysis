@@ -196,7 +196,7 @@ sns.boxplot(y=df_class['Resourse Person'], x=df_class['Overall Organization'])
 plt.show()
 ```
 ![image](https://github.com/AiswaryaArun19/Feedback_Analysis/assets/106422393/24659a6d-387d-4275-bede-97b1b83931c1)
- Visualizing Feedback Distribution Across Branches and Resource Persons
+#  Visualizing Feedback Distribution Across Branches and Resource Persons
 The following code snippet aims to visually represent the distribution of feedback data across different branches for each resource person using a boxplot.
 ```python
 import seaborn as sns
@@ -208,7 +208,7 @@ plt.show()
 ```
 ![image](https://github.com/AiswaryaArun19/Feedback_Analysis/assets/106422393/b8e78aed-0aaa-4876-84fc-24eba346e943)
 
- Visualizing Content Quality Ratings Across Branches
+# Visualizing Content Quality Ratings Across Branches
 The following code snippet aims to visually represent the distribution of "Content Quality" ratings across different branches using a boxplot report.
 ```python
 import seaborn as sns
@@ -219,3 +219,113 @@ sns.boxplot(y=df_class['Branch'], x=df_class['Content Quality'])
 plt.show()
 ```
 ![image](https://github.com/AiswaryaArun19/Feedback_Analysis/assets/106422393/eb487317-f052-4720-8c78-72eae479b161)
+
+# Creating a Feature Matrix
+The following code snippet aims to create a feature matrix `X` by extracting values from specific columns in the DataFrame `df_class`.
+```python
+input_col = ["Content Quality", "Effeciveness", "Expertise", "Relevance", "Overall Organization"]
+X = df_class[input_col].values
+```
+# Elbow Method for Optimal Number of Clusters
+
+The following code snippet aims to utilize the Elbow Method with the KMeans algorithm to determine the optimal number of clusters for the given dataset.
+```python
+# Initialize an empty list to store the within-cluster sum of squares
+from sklearn.cluster import KMeans
+wcss = []
+
+# Try different values of k
+for k in range(1, 11):
+    kmeans = KMeans(n_clusters=k, n_init='auto', random_state=42)
+    kmeans.fit(X)
+    wcss.append(kmeans.inertia_)
+```
+# Elbow Method Plot for Optimal Number of Clusters
+The following code snippet aims to visualize the within-cluster sum of squares (WCSS) for different values of k using the Elbow Method. 
+```python
+# Plot the within-cluster sum of squares for different values of k
+plt.plot(range(1, 11), wcss, marker='o')
+plt.xlabel('Number of Clusters (k)')
+plt.ylabel('Within-Cluster Sum of Squares (WCSS)')
+plt.title('Elbow Method')
+plt.show()
+```
+![image](https://github.com/AiswaryaArun19/Feedback_Analysis/assets/106422393/a4c1bc31-6ca6-41a9-9deb-d79bfdc5f941)
+
+#  Grid Search for Optimal Number of Clusters
+The following code snippet aims to perform a grid search using GridSearchCV to find the optimal number of clusters (n_clusters) for the KMeans algorithm.
+```python
+# Define the parameter grid
+from sklearn.model_selection import GridSearchCV
+
+param_grid = {'n_clusters': [2, 3, 4, 5, 6]}
+
+# Create a KMeans object
+kmeans = KMeans(n_init='auto', random_state=42)
+
+# Create a GridSearchCV object
+grid_search = GridSearchCV(kmeans, param_grid, cv=5)
+
+# Perform grid search
+grid_search.fit(X)
+
+# Get the best parameters and the best score
+best_params = grid_search.best_params_
+best_score = grid_search.best_score_
+```
+#  Displaying Best Parameters and Best Score
+The following code snippet aims to display the best parameters and the corresponding best score obtained from the grid search for the KMeans algorithm. 
+```python
+# Print the best parameters and best score
+print("Best Parameters:", best_params)
+print("Best Score:", best_score)
+```
+![image](https://github.com/AiswaryaArun19/Feedback_Analysis/assets/106422393/b80a3205-0b63-4261-ba94-0d6c841ab189)
+#  K-Means Clustering
+The following code snippet aims to perform k-means clustering on the feature matrix `X` using the KMeans algorithm. 
+```python
+# Perform k-means clustering
+k = 3  # Number of clusters
+kmeans = KMeans(n_clusters=k, n_init='auto', random_state=42)
+kmeans.fit(X)
+```
+![image](https://github.com/AiswaryaArun19/Feedback_Analysis/assets/106422393/ae7a58f4-ca1b-44c8-b8b5-f66e55e40568)
+# Retrieving Cluster Labels and Adding to DataFrame
+The following code snippet aims to retrieve the cluster labels and centroids from the trained k-means model and add the cluster labels to the DataFrame `df_class`. 
+```python
+# Get the cluster labels and centroids
+labels = kmeans.labels_
+centroids = kmeans.cluster_centers_
+
+# Add the cluster labels to the DataFrame
+df_class['Cluster'] = labels
+df_class.head()
+```
+![image](https://github.com/AiswaryaArun19/Feedback_Analysis/assets/106422393/7bb48793-da19-4133-b96c-f8d8b88717ba)
+# Report: Visualization of K-Means Clusters
+
+## Objective
+
+The following code snippet aims to visualize the clusters formed by the k-means algorithm using a scatter plot. This report provides insights into the purpose of the visualization and its role in understanding the distribution of feedback entries in the feature space.
+
+## Code Explanation
+
+```python
+# Visualize the clusters
+plt.scatter(X[:, 1], X[:, 2], c=labels, cmap='viridis')
+plt.scatter(centroids[:, 1], centroids[:, 2], marker='X', s=200, c='red')
+plt.xlabel(input_col[1])
+plt.ylabel(input_col[2])
+plt.title('K-means Clustering')
+plt.show()
+```
+![image](https://github.com/AiswaryaArun19/Feedback_Analysis/assets/106422393/a23391ac-5b03-4c77-8698-66c8562dd969)
+
+# Report: Cross-Tabulation of Cluster vs Content Quality
+The following code snippet aims to create a cross-tabulation table, using the Pandas `crosstab` function, to analyze the relationship between the assigned clusters and the 'Content Quality' ratings provided in the Intel Unnati session feedback.
+```python
+# Cross-Tabulation of Cluster vs Content Quality
+pd.crosstab(columns=df_class['Cluster'], index=df_class['Content Quality'])
+```
+![image](https://github.com/AiswaryaArun19/Feedback_Analysis/assets/106422393/2a2addf2-0dab-4993-a7c6-945a795c0987)
+
